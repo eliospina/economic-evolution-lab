@@ -59,6 +59,16 @@ class Learner:
         """
         return self.Phi.T @ np.concatenate([[1.0], w])
 
+    def predict_raw(self, z):
+        """Forecast from a full regressor vector z (constant already included)."""
+        return self.Phi.T @ z
+
+    def update_raw(self, z, y, gain):
+        """RLS step with a full regressor z (constant already included)."""
+        self.Rmat = self.Rmat + gain * (np.outer(z, z) - self.Rmat)
+        err = y - self.Phi.T @ z
+        self.Phi = self.Phi + gain * np.linalg.solve(self.Rmat, np.outer(z, err))
+
     def update(self, s, y, gain):
         """One RLS step with step size `gain`, regressor z=[1,s], target y=[x,pi]."""
         z = np.concatenate([[1.0], s])
