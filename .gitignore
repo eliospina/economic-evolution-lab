@@ -18,6 +18,8 @@ env/
 # Data — never commit large/raw data (use DVC pointers instead)
 data/*
 !data/.gitkeep
+# ...except the small frozen FRED vintage snapshots (reproducibility)
+!data/fred_nk_*.csv
 
 # Results: keep the directory, ignore generated artifacts by default
 results/*

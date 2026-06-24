@@ -155,6 +155,57 @@ def build(p: NKParams = None, expectations: ExpectationModule = None):
 
 
 # --------------------------------------------------------------------------
+# Reusable structural objects (shared by the RE solve and Phase-2 learning).
+# The same three equations drive both — only the expectation mechanism differs.
+# --------------------------------------------------------------------------
+
+def shock_persistence(p: NKParams = None):
+    """R = diag(rho_g, rho_u, rho_v): E_t s_{t+1} = R s_t for the AR(1) shocks."""
+    p = p or NKParams()
+    return np.diag([p.rho_g, p.rho_u, p.rho_v])
+
+
+def re_reduced_form(p: NKParams = None):
+    """Rational-expectations reduced form  obs_t = F s_t,  obs=[x,pi,i], s=[g,u,v].
+
+    F is exactly the controls-on-states policy matrix from the Phase-1 solve.
+    Returns (F, R). This F is what BOTH models use to recover the latent shocks
+    from observables (s_t = F^{-1} obs_t) — the shared information set.
+    """
+    p = p or NKParams()
+    sol, _ = build(p)
+    # sol.F rows are controls [x, pi, i], cols are states [g, u, v].
+    return sol.F.copy(), shock_persistence(p)
+
+
+def tmap_functions(p: NKParams = None):
+    """Solve the structural block for (x, pi, i) given expectations.
+
+    Returns numpy-callable f(Ex, Epi, g, u, v) -> (x, pi, i). This is the engine
+    behind both the rational fixed point and the learning Actual Law of Motion:
+    feed it model-consistent expectations and you recover F; feed it a PLM's
+    forecasts and you get the realised data under learning.
+    """
+    p = p or NKParams()
+    s, k, b = p.sigma, p.kappa, p.beta
+    x, pi, i, g, u, v, Ex, Epi = sp.symbols("x pi i g u v Ex Epi")
+    eqs = [
+        x - Ex + (1 / s) * (i - Epi) - g,        # IS
+        pi - b * Epi - k * x - u,                # NKPC
+        i - p.phi_pi * pi - p.phi_x * x - v,     # Taylor
+    ]
+    sol = sp.linsolve(eqs, [x, pi, i])
+    (xe, pie, ie), = sol
+    args = (Ex, Epi, g, u, v)
+    fx = sp.lambdify(args, xe, "numpy")
+    fpi = sp.lambdify(args, pie, "numpy")
+    fi = sp.lambdify(args, ie, "numpy")
+    return lambda Ex, Epi, g, u, v: (fx(Ex, Epi, g, u, v),
+                                     fpi(Ex, Epi, g, u, v),
+                                     fi(Ex, Epi, g, u, v))
+
+
+# --------------------------------------------------------------------------
 # CLI: solve, validate (Blanchard-Kahn + Taylor principle), report IRFs.
 # --------------------------------------------------------------------------
 
