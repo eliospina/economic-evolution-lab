@@ -24,6 +24,10 @@ data/*
 # Results: keep the directory, ignore generated artifacts by default
 results/*
 !results/.gitkeep
+# ...except the canonical figures referenced by the README (regenerable)
+!results/rbc_irf.png
+!results/nk_irf.png
+!results/size_gate.png
 
 # OS
 .DS_Store
