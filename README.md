@@ -1,5 +1,8 @@
 # Economic Evolution Lab (EEL)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20836318.svg)](https://doi.org/10.5281/zenodo.20836318)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A formalized, reproducible library of macroeconomic models — an RBC and a
 three-equation New Keynesian DSGE — symbolically specified and solved by
 first-order perturbation, with a swappable expectations operator and

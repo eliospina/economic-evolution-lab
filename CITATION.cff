@@ -31,4 +31,4 @@ keywords:
   - forecast evaluation
   - Clark-West test
   - reproducibility
-# doi: "10.5281/zenodo.XXXXXXX"   # add after archiving a release on Zenodo
+doi: "10.5281/zenodo.20836318"   # concept DOI (resolves to the latest version)
