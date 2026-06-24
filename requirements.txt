@@ -1,0 +1,14 @@
+# Core numerical + symbolic stack (Python 3.9+). Pinned to a lower bound for
+# reproducibility; the perturbation engine needs only these.
+numpy>=1.24
+scipy>=1.10
+sympy>=1.12
+matplotlib>=3.7
+pyyaml>=6.0
+pytest>=7.0
+
+# --- Phase B (AGI-native lab: ABM + LLM agents) needs Python 3.11+; not used
+# --- by the model zoo and intentionally left out of the default install.
+# mesa>=2.0
+# langgraph>=0.2
+# jax>=0.4

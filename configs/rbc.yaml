@@ -1,0 +1,16 @@
+# RBC calibration (quarterly, US-style). Every result is reproducible from
+# this file plus a fixed seed.
+model: rbc
+description: Canonical RBC with endogenous labour supply.
+
+params:
+  alpha: 0.33     # capital share of output
+  beta: 0.99      # discount factor (quarterly => ~4% annual real rate)
+  delta: 0.025    # depreciation (quarterly)
+  rho: 0.95       # productivity persistence
+  sigma: 0.007    # std of the productivity innovation
+  target_n: 0.333 # steady-state hours target (psi is calibrated to hit it)
+
+simulation:
+  irf_horizon: 40
+  seed: 42

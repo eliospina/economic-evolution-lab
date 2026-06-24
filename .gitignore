@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Environments
+venv/
+.venv/
+env/
+.env
+.env.local
+
+# Data — never commit large/raw data (use DVC pointers instead)
+data/*
+!data/.gitkeep
+
+# Results: keep the directory, ignore generated artifacts by default
+results/*
+!results/.gitkeep
+
+# OS
+.DS_Store
