@@ -129,3 +129,9 @@ Symbolic formalisation → reproducible numerical solution → rigorous validati
 (closed-form checks, moment matching, IRFs) → size-calibrated out-of-sample
 evaluation. The governing principle is rigour before impression: a result that is
 convincingly wrong is treated as harm, not a detail.
+
+## Citation and licence
+
+Metadata for citation is in [`CITATION.cff`](CITATION.cff) (GitHub renders a
+"Cite this repository" button from it). Released under the MIT licence
+([`LICENSE`](LICENSE)).

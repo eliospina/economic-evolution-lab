@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Economic Evolution Lab (EEL)"
+abstract: >-
+  A formalized, reproducible library of macroeconomic models — an RBC and a
+  three-equation New Keynesian DSGE — symbolically specified and solved to first
+  order by the generalized Schur (QZ) method of Klein (2000), with a swappable
+  expectations operator (rational expectations and Evans-Honkapohja adaptive
+  learning) and size-calibrated out-of-sample forecast evaluation. The repository
+  documents that comparing a fixed forecast against a constant-gain adaptive
+  forecast with the nested Clark-West test is badly oversized, and calibrates the
+  predictive-accuracy statistics by Monte Carlo against a fixed-coefficient null.
+type: software
+authors:
+  - given-names: Elizabeth
+    family-names: Ospina
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # add when available
+    # affiliation: ""                                    # add if desired
+version: "0.1.0"
+date-released: "2026-06-24"
+license: MIT
+repository-code: "https://github.com/eliospina/economic-evolution-lab"
+url: "https://github.com/eliospina/economic-evolution-lab"
+keywords:
+  - macroeconomics
+  - DSGE
+  - New Keynesian model
+  - real business cycle
+  - perturbation methods
+  - adaptive learning
+  - forecast evaluation
+  - Clark-West test
+  - reproducibility
+# doi: "10.5281/zenodo.XXXXXXX"   # add after archiving a release on Zenodo

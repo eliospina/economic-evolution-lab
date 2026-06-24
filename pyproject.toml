@@ -6,6 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "eel"
 version = "0.1.0"
 description = "Economic Evolution Lab — formalized, solvable, auditable economic models"
+authors = [{ name = "Elizabeth Ospina" }]
+license = { text = "MIT" }
+readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "numpy>=1.24",
