@@ -57,12 +57,20 @@ class Solution:
         return list(self.state_names) + list(self.control_names)
 
 
-def _loglinear_matrices(cur, nxt, equations, ss):
-    """Return (A, B) with  A E_t w_{t+1} = B w_t  in log-deviations.
+def _linearize(cur, nxt, equations, ss, scales):
+    """Return (A, B) with  A E_t w_{t+1} = B w_t.
 
-    For an equation f(w_{t+1}, w_t) = 0, the log-linear coefficient on
-    hat_i = d log(var_i) is  ss_i * df/dvar_i  evaluated at the steady state
-    (because d/dhat of f(var = ss*e^hat) = ss * df/dvar at hat = 0).
+    For an equation f(w_{t+1}, w_t) = 0, the linear coefficient on the
+    deviation of variable i is  scale_i * df/dvar_i  at the steady state.
+
+      - log-deviation  (hat_i = d log var_i):   scale_i = ss_i
+        because d/dhat f(var = ss*e^hat) = ss * df/dvar at hat = 0.
+      - level deviation (hat_i = var_i - ss_i):  scale_i = 1
+        the natural choice when the steady state is 0 (gaps, inflation, rates),
+        where logs are undefined.
+
+    Mixing the two per variable is what lets the same engine solve both a
+    levels model (RBC) and a deviations model (the NK three-equation block).
     """
     n = len(cur)
     subs = {cur[i]: ss[i] for i in range(n)}
@@ -74,13 +82,13 @@ def _loglinear_matrices(cur, nxt, equations, ss):
         for i in range(n):
             d_next = sp.diff(eq, nxt[i]).subs(subs)
             d_cur = sp.diff(eq, cur[i]).subs(subs)
-            A[j, i] = float(d_next) * ss[i]
-            B[j, i] = -float(d_cur) * ss[i]
+            A[j, i] = float(d_next) * scales[i]
+            B[j, i] = -float(d_cur) * scales[i]
     return A, B
 
 
 def solve(states, controls, cur, nxt, equations, steady_state, shocks,
-          tol=1e-9):
+          kinds=None, tol=1e-9):
     """Solve a model to first order.
 
     Parameters
@@ -95,14 +103,21 @@ def solve(states, controls, cur, nxt, equations, steady_state, shocks,
         Steady-state level of every variable (keyed by name).
     shocks : dict[str, float]
         {state_name: std}. The named state(s) receive the innovation.
+    kinds : dict[str, str] | None
+        Per-variable linearisation: 'log' (log-deviation, the default) or
+        'level' (level deviation, for gap/rate variables with a zero steady
+        state). Defaults to 'log' for every variable.
     """
     names = list(states) + list(controls)
     n = len(names)
     n_s = len(states)
     assert len(cur) == len(nxt) == len(equations) == n, "size mismatch"
 
+    kinds = kinds or {}
     ss = [float(steady_state[name]) for name in names]
-    A, B = _loglinear_matrices(cur, nxt, equations, ss)
+    scales = [ss[i] if kinds.get(names[i], "log") == "log" else 1.0
+              for i in range(n)]
+    A, B = _linearize(cur, nxt, equations, ss, scales)
 
     # --- Generalized Schur (QZ), stable eigenvalues sorted to the top-left ---
     # Dynamic eigenvalue of the pencil is beta/alpha; stable iff |beta| < |alpha|.
