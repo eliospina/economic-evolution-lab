@@ -16,6 +16,8 @@ dependencies = [
     "sympy>=1.12",
     "matplotlib>=3.7",
     "pyyaml>=6.0",
+    "pandas>=2.0",
+    "pandas-datareader>=0.10",
 ]
 
 [project.optional-dependencies]
