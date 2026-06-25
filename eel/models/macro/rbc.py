@@ -159,18 +159,26 @@ def _report():
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         import os
-        fig, ax = plt.subplots(figsize=(9, 5.5))
-        for name in ["y", "c", "i", "n"]:
-            ax.plot(irf[name] * 100, label=name.upper(), linewidth=2)
-        ax.axhline(0, color="k", linewidth=0.6)
-        ax.set_title("RBC — impulse responses to a 1% productivity shock")
+        from eel import figstyle as S
+        S.apply()
+
+        # (key, label, colour, line style)
+        series = [("y", "Output",      S.INK,   S.STYLES[0]),
+                  ("c", "Consumption", S.NAVY,  S.STYLES[1]),
+                  ("i", "Investment",  S.BRICK, S.STYLES[3]),
+                  ("n", "Hours",       S.GREEN, S.STYLES[2])]
+        fig, ax = plt.subplots(figsize=(6.6, 4.3))
+        for key, label, color, ls in series:
+            ax.plot(irf[key] * 100, color=color, ls=ls, lw=1.6, label=label)
+        ax.axhline(0, color=S.GRAY, lw=0.7, zorder=1)
+        ax.set_xlim(0, len(irf["y"]) - 1)
         ax.set_xlabel("quarters")
         ax.set_ylabel("% deviation from steady state")
-        ax.legend()
-        ax.grid(alpha=0.3)
+        ax.set_title("Impulse responses to a 1% productivity shock")
+        ax.legend(loc="upper right")
         os.makedirs("results", exist_ok=True)
         out = "results/rbc_irf.png"
-        fig.savefig(out, dpi=120, bbox_inches="tight")
+        fig.savefig(out, dpi=300)
         print(f"\nimpulse-response figure saved to {out}")
     except Exception as e:                      # plotting is optional
         print(f"\n(plot skipped: {e})")

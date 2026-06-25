@@ -20,11 +20,14 @@ from scipy.stats import norm
 from eel.data import fred
 from eel.evaluation import adaptation as ad
 from eel.evaluation import clark_west as cw
+from eel import figstyle as S
 
 TRAIN_END = "1984-12-31"
 
 
 def main():
+    S.apply()
+
     df, _ = fred.load(start="1960-01-01", end="2019-12-31")
     train_mask = np.asarray(df.index <= TRAIN_END)
     obs = df[["x", "pi", "i"]].to_numpy()
@@ -42,40 +45,48 @@ def main():
     o = np.arange(n_train - 1, n - 1)
     obs_stat = cw.clark_west(obs[o + 1, 1], f_fix[o, 1], f_cg[o, 1])["statistic"]
     mc_p = ad.mc_pvalue(obs_stat, null)
+    nm, nsd = null.mean(), null.std()
 
-    fig, ax = plt.subplots(figsize=(9.5, 5.5))
-    ax.hist(null, bins=45, density=True, color="#9bb8c9", edgecolor="white",
-            linewidth=0.4, label="simulated null (fixed-coef DGP, no adaptation)")
-    xs = np.linspace(-4, max(null.max(), obs_stat) + 0.5, 400)
-    ax.plot(xs, norm.pdf(xs), color="#222222", lw=1.6,
-            label="assumed asymptotic null  N(0,1)")
-    ax.axvline(1.645, color="#444444", ls=":", lw=1.3)
-    ax.text(1.70, ax.get_ylim()[1] * 0.40, "asymptotic 5%\nthreshold (1.645)",
-            fontsize=8.5, color="#444444", rotation=90, va="center")
-    ax.axvline(obs_stat, color="#b5651d", lw=2.0)
-    ax.text(obs_stat, ax.get_ylim()[1] * 0.62,
-            f" observed = {obs_stat:.2f}", fontsize=9, color="#b5651d")
+    fig, ax = plt.subplots(figsize=(6.9, 4.5))
+    xmax = max(null.max(), obs_stat) + 0.6
 
-    above = null[null >= obs_stat]
-    ax.text(0.02, 0.97,
-            f"null mean = {null.mean():.2f}  (not 0),  sd = {null.std():.2f}\n"
-            f"asymptotic test rejects {rate:.0%} of the time at nominal 5%\n"
-            f"asymptotic p = {1-norm.cdf(obs_stat):.3f}  (invalid)\n"
-            f"MC-calibrated p = {mc_p:.3f}  (= share of null ≥ observed)",
-            transform=ax.transAxes, va="top", ha="left", fontsize=9,
-            family="monospace",
-            bbox=dict(boxstyle="round", fc="#faf8f4", ec="#cccccc"))
+    # simulated null (no-adaptation DGP)
+    ax.hist(null, bins=48, density=True, color="#d9d9d9", edgecolor="#9e9e9e",
+            linewidth=0.4, zorder=2,
+            label="simulated null  (no-adaptation DGP)")
 
-    ax.set_title("The nested Clark-West is not N(0,1) for fixed-vs-constant-gain:\n"
-                 "size calibration is required", fontsize=11)
-    ax.set_xlabel("Clark-West statistic")
+    # the assumed asymptotic null
+    xs = np.linspace(-4, xmax, 500)
+    ax.plot(xs, norm.pdf(xs), color=S.INK, lw=1.8, zorder=4,
+            label=r"assumed null   $N(0,1)$")
+    tail = xs >= 1.645
+    ax.fill_between(xs[tail], norm.pdf(xs[tail]), color=S.GRAY, alpha=0.18, zorder=1)
+    ax.axvline(1.645, color=S.GRAY, ls=(0, (2, 2)), lw=1.0, zorder=3)
+    ax.text(1.645, 0.255, "5% crit. (1.645) ", color=S.GRAY, fontsize=8.5,
+            rotation=90, va="center", ha="right")
+
+    ax.axvline(nm, color=S.GRAY, ls=(0, (4, 2)), lw=1.0, zorder=3)
+    ax.axvline(obs_stat, color=S.BRICK, lw=1.8, zorder=5)
+    ax.text(obs_stat + 0.1, 0.30, f"observed {obs_stat:.2f}", color=S.BRICK,
+            fontsize=9.5, va="center")
+
+    card = (f"rejects {rate:.0%} at the 5% level   (nominal 5%)\n"
+            f"null mean {nm:.2f},  sd {nsd:.2f}    (N(0,1): 0, 1)\n"
+            f"asymptotic p = {1 - norm.cdf(obs_stat):.3f}   invalid\n"
+            f"Monte-Carlo p = {mc_p:.3f}   size-corrected")
+    ax.text(0.975, 0.74, card, transform=ax.transAxes, va="top", ha="right",
+            family="Menlo", fontsize=8.6, color=S.INK, linespacing=1.5,
+            bbox=dict(boxstyle="round,pad=0.5", fc="white", ec=S.LINE, lw=0.8))
+
+    ax.set_xlabel("Clark–West statistic")
     ax.set_ylabel("density")
-    ax.legend(loc="center right", fontsize=8.5, framealpha=0.9)
-    ax.grid(alpha=0.25)
-    fig.tight_layout()
-    fig.savefig("results/size_gate.png", dpi=130, bbox_inches="tight")
+    ax.set_xlim(-4, xmax)
+    ax.set_title("Null distribution of the fixed-vs-constant-gain Clark–West statistic")
+    ax.legend(loc="upper left")
+
+    fig.savefig("results/size_gate.png", dpi=300)
     print(f"saved results/size_gate.png  "
-          f"(null mean {null.mean():.2f}, reject {rate:.0%}, obs {obs_stat:.2f}, MC p {mc_p:.3f})")
+          f"(null mean {nm:.2f}, reject {rate:.0%}, obs {obs_stat:.2f}, MC p {mc_p:.3f})")
 
 
 if __name__ == "__main__":

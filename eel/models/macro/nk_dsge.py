@@ -245,21 +245,28 @@ def _report():
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         import os
-        fig, axes = plt.subplots(1, 3, figsize=(13, 4), sharex=True)
+        from eel import figstyle as S
+        S.apply()
+
+        nk_series = [("x", "output gap", S.INK, S.STYLES[0]),
+                     ("pi", "inflation", S.BRICK, S.STYLES[1]),
+                     ("i", "policy rate", S.NAVY, S.STYLES[3])]
+        titles = {"v": "Monetary shock", "u": "Cost-push shock", "g": "Demand shock"}
+        fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.7), sharex=True)
         for ax, sname in zip(axes, ["v", "u", "g"]):
             irf = irfs[sname]
-            for var in ["x", "pi", "i"]:
-                ax.plot(irf[var] * 100, label=var, linewidth=2)
-            ax.axhline(0, color="k", linewidth=0.6)
-            ax.set_title(labels[sname])
+            for var, label, color, ls in nk_series:
+                ax.plot(irf[var] * 100, color=color, ls=ls, lw=1.5, label=label)
+            ax.axhline(0, color=S.GRAY, lw=0.7, zorder=1)
+            ax.set_title(titles[sname])
             ax.set_xlabel("quarters")
-            ax.grid(alpha=0.3)
+            ax.set_xlim(0, len(irf["x"]) - 1)
         axes[0].set_ylabel("% deviation from steady state")
-        axes[0].legend()
+        axes[0].legend(loc="best")
+        fig.suptitle("New Keynesian DSGE — impulse responses", y=1.02, fontsize=12)
         os.makedirs("results", exist_ok=True)
         out = "results/nk_irf.png"
-        fig.suptitle("NK 3-equation DSGE — impulse responses")
-        fig.savefig(out, dpi=120, bbox_inches="tight")
+        fig.savefig(out, dpi=300)
         print(f"\nimpulse-response figure saved to {out}")
     except Exception as e:
         print(f"\n(plot skipped: {e})")

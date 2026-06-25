@@ -98,8 +98,9 @@ def main():
         o = np.arange(n_train - 1, n - 1)
         r = lambda f: np.sqrt(np.mean((obs[o + 1, j] - f[o, j])**2))
         print(f"  {name:<8}{r(ff):>10.4f}{r(fd):>12.4f}{r(fc):>10.4f}")
-    print("  (monotone: fixed (no adaptation) >= decreasing >= constant-gain by RMSE.")
-    print("   Even fading adaptation beats freezing; persistent tracking helps most.)")
+    print("  (RMSE ordering here is DESCRIPTIVE only: fixed >= decreasing >= constant-gain.")
+    print("   A lower RMSE does NOT imply a real effect -- under the size-gated test above")
+    print("   this ordering is not statistically distinguishable from estimation noise.)")
 
     # ---- regime concentration -------------------------------------------
     print("\n" + "=" * 70)

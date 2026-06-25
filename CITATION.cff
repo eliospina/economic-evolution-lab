@@ -14,7 +14,7 @@ type: software
 authors:
   - given-names: Elizabeth
     family-names: Ospina
-    # orcid: "https://orcid.org/0000-0000-0000-0000"   # add when available
+    orcid: "https://orcid.org/0009-0004-7291-3340"
     # affiliation: ""                                    # add if desired
 version: "0.1.0"
 date-released: "2026-06-24"
