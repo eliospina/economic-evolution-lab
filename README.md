@@ -101,6 +101,7 @@ adaptation cannot help. Full write-ups:
 
 ```bash
 python3 -m venv venv && source venv/bin/activate
+python -m pip install --upgrade pip
 pip install -e ".[dev]"                       # or: pip install -r requirements.txt
 
 pytest -q                                     # 32 correctness + size-control tests
