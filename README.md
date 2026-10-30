@@ -76,7 +76,8 @@ repository therefore calibrates the Clark-West and Giacomini-White statistics by
 Monte Carlo against that null; the calibration is verified to restore correct size
 (≈5% rejection, approximately uniform p-values).
 
-![The nested Clark-West is not N(0,1) for fixed-vs-constant-gain; size calibration is required](results/size_gate.png)
+![Uploading size_gate.png…]()
+
 
 **A substantive (null) result.** On a long out-of-sample split (train
 1960Q1–1984Q4, evaluate 1985Q1–2019Q4, n=140) chosen to favour adaptation — the
