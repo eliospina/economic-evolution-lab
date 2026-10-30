@@ -52,11 +52,11 @@ engine and adds the swappable expectations operator.
 ## How a model is solved
 
 1. **Formalise.** The equilibrium conditions are written in SymPy. This is not
-   decoration: SymPy differentiates them to build the (log-)linear system.
+decoration: SymPy differentiates them to build the (log-)linear system.
 2. **Solve.** `A E_t w_{t+1} = B w_t` is solved by Klein's (2000) generalized
-   Schur (QZ) method, yielding policy functions and a Blanchard-Kahn check.
+Schur (QZ) method, yielding policy functions and a Blanchard-Kahn check.
 3. **Validate.** Exact closed-form check (δ=1 ⇒ Brock-Mirman), steady-state
-   identities, impulse-response signs, and business-cycle moments.
+identities, impulse-response signs, and business-cycle moments.
 
 Impulse responses reproduce the textbook signatures of each model:
 
@@ -76,8 +76,7 @@ repository therefore calibrates the Clark-West and Giacomini-White statistics by
 Monte Carlo against that null; the calibration is verified to restore correct size
 (≈5% rejection, approximately uniform p-values).
 
-![Uploading size_gate.png…]()
-
+![Null distribution of the fixed-vs-constant-gain Clark-West statistic](results/size_gate.png)
 
 **A substantive (null) result.** On a long out-of-sample split (train
 1960Q1–1984Q4, evaluate 1985Q1–2019Q4, n=140) chosen to favour adaptation — the
