@@ -52,36 +52,38 @@ def main():
 
     # simulated null (no-adaptation DGP)
     ax.hist(null, bins=48, density=True, color="#d9d9d9", edgecolor="#9e9e9e",
-            linewidth=0.4, zorder=2,
-            label="simulated null  (no-adaptation DGP)")
+            linewidth=0.4, zorder=2, label="simulated null")
 
     # the assumed asymptotic null
     xs = np.linspace(-4, xmax, 500)
     ax.plot(xs, norm.pdf(xs), color=S.INK, lw=1.8, zorder=4,
-            label=r"assumed null   $N(0,1)$")
-    tail = xs >= 1.645
-    ax.fill_between(xs[tail], norm.pdf(xs[tail]), color=S.GRAY, alpha=0.18, zorder=1)
-    ax.axvline(1.645, color=S.GRAY, ls=(0, (2, 2)), lw=1.0, zorder=3)
-    ax.text(1.645, 0.255, "5% crit. (1.645) ", color=S.GRAY, fontsize=8.5,
-            rotation=90, va="center", ha="right")
+            label=r"assumed $N(0,1)$")
 
-    ax.axvline(nm, color=S.GRAY, ls=(0, (4, 2)), lw=1.0, zorder=3)
-    ax.axvline(obs_stat, color=S.BRICK, lw=1.8, zorder=5)
-    ax.text(obs_stat + 0.1, 0.30, f"observed {obs_stat:.2f}", color=S.BRICK,
-            fontsize=9.5, va="center")
+    # reference lines stop below the legend / card band so nothing overlaps
+    top = 0.44 / 0.62
+    lab = dict(rotation=90, va="top", ha="right", fontsize=8.5)
+    ax.axvline(1.645, ymax=top, color=S.GRAY, ls=(0, (2, 2)), lw=1.0, zorder=3)
+    ax.text(1.645 - 0.05, 0.43, "5% critical value 1.645", color=S.GRAY, **lab)
+    ax.axvline(nm, ymax=top, color=S.GRAY, ls=(0, (4, 2)), lw=1.0, zorder=3)
+    ax.text(nm + 0.05, 0.43, f"null mean {nm:.2f}", color=S.GRAY,
+            **{**lab, "ha": "left"})
+    ax.axvline(obs_stat, ymax=top, color=S.BRICK, lw=1.8, zorder=5)
+    ax.text(obs_stat + 0.08, 0.43, f"observed {obs_stat:.2f}", color=S.BRICK,
+            **{**lab, "ha": "left", "fontsize": 9.5})
 
-    card = (f"rejects {rate:.0%} at the 5% level   (nominal 5%)\n"
-            f"null mean {nm:.2f},  sd {nsd:.2f}    (N(0,1): 0, 1)\n"
-            f"asymptotic p = {1 - norm.cdf(obs_stat):.3f}   invalid\n"
-            f"Monte-Carlo p = {mc_p:.3f}   size-corrected")
-    ax.text(0.975, 0.74, card, transform=ax.transAxes, va="top", ha="right",
-            family="Menlo", fontsize=8.6, color=S.INK, linespacing=1.5,
+    card = (f"rejects {rate:.0%} at the nominal 5% level\n"
+            f"null mean {nm:.2f}, sd {nsd:.2f}  (N(0,1): 0, 1)\n"
+            f"asymptotic p = {1 - norm.cdf(obs_stat):.3f}  invalid\n"
+            f"Monte Carlo p = {mc_p:.3f}  size-corrected")
+    ax.text(0.985, 0.99, card, transform=ax.transAxes, va="top", ha="right",
+            family="monospace", fontsize=8.6, color=S.INK, linespacing=1.5,
             bbox=dict(boxstyle="round,pad=0.5", fc="white", ec=S.LINE, lw=0.8))
 
-    ax.set_xlabel("Clark–West statistic")
+    ax.set_xlabel("Clark-West statistic")
     ax.set_ylabel("density")
     ax.set_xlim(-4, xmax)
-    ax.set_title("Null distribution of the fixed-vs-constant-gain Clark–West statistic")
+    ax.set_ylim(0, 0.62)
+    ax.set_title("Null distribution of the fixed-vs-constant-gain Clark-West statistic")
     ax.legend(loc="upper left")
 
     fig.savefig("results/size_gate.png", dpi=300)
